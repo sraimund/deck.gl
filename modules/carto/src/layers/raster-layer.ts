@@ -1,3 +1,7 @@
+// deck.gl
+// SPDX-License-Identifier: MIT
+// Copyright (c) vis.gl contributors
+
 import {
   Accessor,
   CompositeLayer,
@@ -77,6 +81,15 @@ type _RasterLayerProps = {
   tileIndex: bigint;
 };
 
+type RasterColumnLayerData = {
+  data: Raster;
+  length: number;
+};
+
+function wrappedDataComparator(oldData: RasterColumnLayerData, newData: RasterColumnLayerData) {
+  return oldData.data === newData.data && oldData.length === newData.length;
+}
+
 // Adapter layer around RasterColumnLayer that converts data & accessors into correct format
 export default class RasterLayer<DataT = any, ExtraProps = {}> extends CompositeLayer<
   Required<RasterLayerProps<DataT>> & ExtraProps
@@ -126,6 +139,7 @@ export default class RasterLayer<DataT = any, ExtraProps = {}> extends Composite
           data, // Pass through data for getSubLayerAccessor()
           length: blockSize * blockSize
         },
+        dataComparator: wrappedDataComparator,
         offset,
         lineWidthScale, // Re-use widthScale prop to pass cell scale,
         highlightedObjectIndex,
